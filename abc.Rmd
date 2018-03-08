@@ -1,0 +1,631 @@
+---
+title: "Exploratory data analysis and summarization of white wine data"
+author: "Shreyas Raghavan"
+date: "8 March 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exploratory Data Analysis of the White Wine dataset
+
+The project is aimed at looking and finding deep insights of the white wine dataset. The report also aims in bringing us to a conclusion so as to what are the factors that affect the quality of wine. 
+
+The data used is based on the wine quality dataset as recommended by Udacity. The features of the dataset are as follows , This dataset has 13 variables which contains 9 variables of ingredient, 2 variables of physical properity, 1 variable of quantity and 1 of quality.
+The dataset are of the size `4989 , 13`. 
+The libraries used for the data are , tidyverse and GGally. The libraries are used for visualization which can help us to come to conclusion. 
+
+```{r echo = FALSE,message=FALSE, warning=FALSE}
+#install.packages("tidyverse", repos='http://cran.us.r-project.org')
+#install.packages("GGally",repos = "http://cran.us.r-project.org")
+```
+
+
+### Data and Types
+
+The data is in csv format.In computing, a comma-separated values (CSV) file stores tabular data (numbers and text) in plain text. Each line of the file is a data record. Each record consists of one or more fields, separated by commas. 
+
+All wines are produced in a particular area of Portugal. Data are collected on 12 different properties of the wines one of which is Quality, based on sensory data, and the rest are on chemical properties of the wines including density, acidity, alcohol content etc. All chemical properties of wines are continuous variables. Quality is an ordinal variable with possible ranking from 1 (worst) to 10 (best). Each variety of wine is tasted by three independent tasters and the final rank assigned is the median rank given by the tasters.
+
+**Attribute Information:**
+
+For more information, read [Cortez et al., 2009]. 
+Input variables (based on physicochemical tests): 
+1 - fixed acidity 
+2 - volatile acidity 
+3 - citric acid 
+4 - residual sugar 
+5 - chlorides 
+6 - free sulfur dioxide 
+7 - total sulfur dioxide 
+8 - density 
+9 - pH 
+10 - sulphates 
+11 - alcohol 
+Output variable (based on sensory data): 
+12 - quality (score between 0 and 10)
+
+```{r echo = FALSE , message=FALSE, warning=FALSE, packages}
+library("tidyverse")
+library("GGally")
+```
+
+
+### Importing the dataset 
+
+We import the dataset by using the read_csv function of R. We then , save it in dataframe format. In our case we have assigned variable name df. 
+
+```{r echo=TRUE}
+df = read.csv("wineQualityWhites.csv")
+```
+
+Let's view our imported data in dataframe format. For this we use the head function to view the 5 rows. 
+
+```{r echo=FALSE}
+head(df)
+```
+
+As we could see that we've a column named 'X' which basically is the index. We won't be using that column for any of our computation since we won't actually gain any insights about the problem statement.
+```{r echo = FALSE}
+df = within(df , rm(X))
+```
+
+Dataframe after removing the columns 'X'
+```{r}
+head(df)
+```
+
+### Statistical summary of the data 
+
+```{r echo=FALSE}
+summary(df)
+```
+The statistics about the data tells us that it has been recorded in one of the wine sample that total sulpher dioxide is 440.0 it is also worth noting that the free sulpher dioxide in one of the sample is 289.0 as maximum and minimum value recorded for the very same is 2.0 
+
+The mean noted for the quality of wine is 5.878. We would now dive deep into seeing what factors affect the quality of wine. 
+
+### Univariate plots 
+
+The count of each individual value of quality of wine is plotted below.
+
+
+```{r echo = FALSE}
+ggplot(df,aes(quality))+geom_bar()+ggtitle("Quality counts graph")
+summary(df$quality)
+``` 
+
+The **fixed acidity** graph is plotted below. This graph represents the occurance of the values. 
+
+
+```{r echo = FALSE}
+ggplot(df,aes(fixed.acidity))+geom_histogram(binwidth = 0.1)+ggtitle("Fixed Acidity Value count")
+```
+
+As we can see that there is a uniform distribution of the fixed acidity value. We can also identify outliers present in our dataset. The outlier in this case could be 14.2 since there is a huge deficit of datapoints between 11.8 and 14.2 and there are no values present between 11.8 and 14.2. 
+
+The **volatile acidity** graph is plotted below. 
+
+```{r echo=FALSE}
+ggplot(df,aes(volatile.acidity))+geom_histogram(binwidth = 0.1)+ggtitle("Volatile Acidity count graph")
+``` 
+
+
+
+The values are continuous in case of volatile acidity. Although there are outliers, there isn't any disctinct outlier which we should worry about at the moment. 
+
+The next graph would be the **citrus acid** count graph. 
+
+```{r echo = FALSE}
+ggplot(df,aes(citric.acid))+geom_histogram(bins = 30)+ggtitle("Citric Acid Count graph")
+``` 
+The values are continuous and we do not have any distinct outlier. But as we can see from the graph, we have more amount of occurance of citrus acid having values somewhere around 0.25. 
+
+The next graph would be for **residual sugar** 
+
+
+```{r echo = FALSE}
+ggplot(df,aes(residual.sugar))+geom_histogram(binwidth = 0.5)+ggtitle("Residual Sugar Count")
+```
+
+
+As the value for residual sugar increases, the count reduces. There are some outliers present around points 30 and 65.
+
+The graph for **Cloride count** is plotted below.
+
+
+```{r echo=FALSE}
+ggplot(df,aes(chlorides))+geom_histogram(binwidth = 0.01)+ggtitle("Chloride Count")
+summary(df$chlorides)
+```
+
+
+
+We could see that the mean of chlorides is 0.04577. 
+
+The graph for **Alcohol count** is plotted below.
+
+```{r echo=FALSE}
+ggplot(df , aes(alcohol)) + geom_histogram(binwidth = 0.1)+ggtitle("Alcohol count")
+```
+
+The mean of alcohol count is 10.51 while the maximum value is 14.20.
+
+The graph for **Free Sulphur Dioxide Count** is plotted below.
+```{r echo=FALSE}
+ggplot(df,aes(free.sulfur.dioxide))+geom_histogram(binwidth = 1)+ggtitle("Free Sulpher Dioxide count rate")
+```
+
+
+
+We can see from the graph that average value for free sulphur dioxide is around 35. There are some outliers present, after 80.
+
+
+Plotted below is the graph for **Total Sulphur Dioxide count** 
+
+```{r echo=FALSE}
+ggplot(df,aes(total.sulfur.dioxide))+geom_histogram(binwidth = 2)+ggtitle("Total Sulfur dioxide count")
+```
+
+
+
+From the graph, we can see that the highest count of sulphur dioxide is at point 440. Mean is 138.4. The graph contains some outliers.
+
+
+Plotted below is the garph for **pH count**
+
+```{r echo=FALSE}
+ggplot(df,aes(pH))+ggtitle("pH count ")+geom_histogram(binwidth = 0.05)
+```
+
+
+The graph is continuous, where the value of pH with maximum counts is 3.18.
+
+
+The graph plotted below is for **Density count**
+
+```{r echo=FALSE}
+ggplot(df,aes(density))+ggtitle("Density Count")+geom_histogram(binwidth = 0.001)
+```
+
+The graph for **Sulphates count ** is plotted below.
+
+
+```{r echo=FALSE}
+ggplot(df,aes(sulphates))+geom_histogram(binwidth = 0.01 )+ggtitle("Sulphates count")
+```
+
+### Inference from Univariate Analysis 
+
+We can check for various outliers on the dataset. Few examples such as in total sulfur dioxide where the value exceeds in 400.0 which is obviously an outlier. In this step we remove all the outliers present in the dataset. 
+
+``` {r}
+df_rmout = subset(df,residual.sugar < 25)
+df_rmout = subset(df,total.sulfur.dioxide < 300) 
+df_rmout = subset(df,density < 1.005)
+df_rmout = subset(df,free.sulfur.dioxide < 150)
+``` 
+
+We remove outliers from residual sugar,total sulfur dioxide,density and sulfur dioxide.These outliers affect the mean of the data. 
+
+```{r echo = FALSE}
+summary(df_rmout)
+```
+
+### The new univariate plots. 
+
+*** Quality *** 
+
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(quality))+geom_bar()+ggtitle("Quality counts graph")
+summary(df_rmout$quality)
+``` 
+
+** Fixed Acidity **
+
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(fixed.acidity))+geom_histogram(binwidth = 0.1)+ggtitle("Fixed Acidity Value count")
+```
+
+** Volatile Acidity ** 
+
+
+```{r echo=FALSE}
+ggplot(df_rmout,aes(volatile.acidity))+geom_histogram(binwidth = 0.1)+ggtitle("Volatile Acidity count graph")
+``` 
+
+
+** Citric Acid **
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(citric.acid))+geom_histogram(bins = 30)+ggtitle("Citric Acid Count graph")
+``` 
+
+
+ **residual sugar** 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(residual.sugar))+geom_histogram(binwidth = 0.5)+ggtitle("Residual Sugar Count")
+```
+
+
+**Alcohol count**
+
+
+```{r echo=FALSE}
+ggplot(df_rmout , aes(alcohol)) + geom_histogram(binwidth = 0.1)+ggtitle("Alcohol count")
+```
+
+
+**Free Sulphur Dioxide Count** 
+
+
+```{r echo=FALSE}
+ggplot(df_rmout,aes(free.sulfur.dioxide))+geom_histogram(binwidth = 1)+ggtitle("Free Sulpher Dioxide count rate")
+```
+
+**Density count**
+
+
+```{r echo=FALSE}
+ggplot(df_rmout,aes(density))+ggtitle("Density Count")+geom_histogram(binwidth = 0.001)
+```
+
+
+**Sulphates count ** 
+
+```{r echo=FALSE}
+ggplot(df_rmout,aes(sulphates))+geom_histogram(binwidth = 0.01 )+ggtitle("Sulphates count")
+```
+
+**Total Sulphur Dioxide count** 
+
+
+```{r echo=FALSE}
+ggplot(df_rmout,aes(total.sulfur.dioxide))+geom_histogram(binwidth = 2)+ggtitle("Total Sulfur dioxide count")
+```
+
+**pH count**
+
+
+```{r echo=FALSE}
+ggplot(df_rmout,aes(pH))+ggtitle("pH count ")+geom_histogram(binwidth = 0.05)
+```
+
+## Further inference
+We have also used segments to classify the wine quality , These segmentation is done to three ( average , good , great ). 
+Also created a column called ratio which specify the ratio of SO2 in the wine. 
+
+0-4 :- bad 
+4-6 :- Good 
+6-9 :- Great! 
+
+The ratio calculations are free sulpher dioxide / total sulpher dioxide. 
+
+```{r}
+df_rmout$class = cut(df_rmout$quality,breaks=c(0,4,6,9),labels=c("average","good","great"))
+df_rmout$ratio = (df_rmout$free.sulfur.dioxide/df_rmout$total.sulfur.dioxide)
+``` 
+```{r echo = FALSE}
+ggplot(df_rmout,aes(class))+geom_bar()
+``` 
+
+
+Our final table before bivariate analysis looks like as follows , 
+
+
+```{r echo = FALSE}
+head(df_rmout)
+``` 
+
+
+and summary of the data would be 
+
+
+```{r echo = FALSE}
+summary(df_rmout)
+``` 
+
+
+As opposed to previous data which is , 
+
+
+```{r echo = FALSE}
+summary(df)
+```
+
+## Bivariate analysis 
+
+The analysis takes comparsion between two variables and tries to establish/show relationship between them. 
+
+Let's take a look at Correlation plot which was made using GGally library. 
+
+```{r echo = FALSE}
+### Bivariate 
+ggcorr(df_rmout,nbreaks = 4)+theme(axis.text=element_blank())
+``` 
+
+By the graph we could see strong relations between density and residual sugar , total sulpher and free sulpher as well as negative relation (but strong) between alcohol and density. It would be further interesting to see these effects on the total quality of the wine. 
+
+The most significant could be the relation between the wine quality ( the class column ) and alcohol, a relation could be established. We can take a look at it. 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(class,alcohol))+geom_boxplot()
+``` 
+
+The relation between higher quality wine and alcohol seems to make more sense. 
+
+The density graph for the same can be seen. 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,fill=class))+geom_histogram(aes(x = alcohol , y = ..density..),binwidth = 0.1)+geom_density(alpha=0.2)
+``` 
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,fill=class))+geom_density(alpha=0.2)
+``` 
+
+
+By the two graph above we can see that more alcohol means wine is great but , it's not particularly enough to establish that relation. While average wine's have lower concentration of alcohol but significantly most of the good wines have lower alcohol concentration. Hence , It cannot be established. We may look out for other factors such as SO2. 
+
+```{r echo = FALSE}
+print(quantile(df_rmout[df_rmout$class=="average",]$alcohol))
+print(quantile(df_rmout[df_rmout$class=="good",]$alcohol))
+print(quantile(df_rmout[df_rmout$class=="great",]$alcohol))
+``` 
+
+These Quantile ranges gives us a clear picture about the alcohol concentration as we can see that alcohol concentration below 8.5 doesn't quality for a great wine. similarly Q1 for a great wine is 10.7 which means 75% of the drinks are with concentration more than 10.7 percent concentration. 
+
+** Total Sulpher Dioxide vs class of wine ** 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(class,total.sulfur.dioxide))+geom_boxplot()
+```
+
+
+The effect of Total Sulpher Dioxide seems to be a bit less , But we can say that great wines do not have Total Sulpher Dioxide more than 220 whilst for average and good glass of wine consists of a higher as well as lower total sulpher dioxide. 
+
+Our inference from this could be the fact that , There seems to be a a certain limit on the total sulpher dioxide which makes the wine a great wine. Though we can't conclusively say it but can possible infer from the very graph above. The similar trend has been observed for average and good wines. We may need to check other parameters for a conclusion. 
+
+** Free Sulpher Dioxide ** 
+
+
+```{r echo=FALSE}
+ggplot(df_rmout,aes(class,free.sulfur.dioxide))+geom_boxplot()
+```
+
+Similarly for the free sulphur dioxide. We can see that good as well as great wines have similar mean. Meanwhile average wines have higher free sulpher dioxide. 
+
+Let's check similarly for Density and Residual Sugar whether they have any effect on the total quality of the wine. 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(residual.sugar,fill = class))+geom_density(alpha = 0.5)
+```
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(class , residual.sugar))+geom_boxplot()
+```
+
+
+Well , There seems to be the case where great wines have lower residual sugar. We also see that most of the great wines have lower residual sugar. Perhaps , we should check the correlation between the density and residual sugar for more inference .
+
+
+```{r echo = FALSE}
+cor(df_rmout$density,df_rmout$residual.sugar)
+```
+
+There is a strong correlation between residual sugar and density which can help us check for density vs quality. 
+
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(density,fill = class))+geom_density(alpha = 0.5)
+```
+
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(class ,density))+geom_boxplot()
+```
+
+
+As we can see that lower density better wine. As once famous wine drinker said "It's wine not a soup!" 
+
+
+We also saw a relation between alcohol and density. This relation can be seen on the graph below. 
+
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,density))+geom_point()
+```
+
+
+
+We also check for relation between residual sugar and density for further inference. 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(residual.sugar,density))+geom_point()
+``` 
+
+Here is the plot (above) which shows relation between residual sugar and density. 
+
+There is a negative relation between density and alcohol which seems to be the case so as to why great wines have lower density and higher alcohol concentration as well as lower SO2 levels(free and total). 
+
+Our analysis proves that , Better wines are bound to have a control on alcohol level and SO2 level and since they use more concentrated alcohol they're bound to have a lower density. Since they tend to have a lower density they also tend to have lower residual sugar. 
+
+## Multivariate Analysis
+
+We'll be using facet grid to have further confidence with what we're going with. Previously we saw quality of wines are affected by parameters such as density , alcohol and total sulphate dioxide as well as free sulphate dioxide. We were further able to see how average wines are basically an uneven mixture of components. We here would further try to diffrentiate and establish our confidence on how to make the best wine! Maybe our wine features in a movie with actress holding it up and saying well , This is the best bottle of wine i've ever had. Let's try to understand more in this component. But , We're going to tweak things up. We won't be using the classification used previously but identify on the basis of "quality parameter". 
+
+
+Our first analysis is going to be focusing upon factors which weren't covered in bivariate analysis. We start of with **pH and Ratio( free SO2 VS total SO2** 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(pH,ratio,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)
+``` 
+
+
+
+So , What's different ? We are seeing that higher quality of wine have lower ratio and average pH rate somewhere around 3.03 to 3.33. Meanwhile the lower quality wines have lower ratio and a scattered pH. Which won't give us a confidence so as to how things are affected by pH in the lower quality wines. But Higher Quality wines tends to maintain a perfect pH range. 
+
+
+So , How about **pH and residual sugar ** ? 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(pH,residual.sugar,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)+
+  coord_cartesian(ylim=c(0,20))
+``` 
+
+As seen previously in bivariate analysis that lower residual sugar results in great wines. The good wines have a scattered residual sugar rates. Which can further mean that residual sugar along a certain pH range gives a better wine. As seen in quality 8. The qualuty 5 & 6 have higher residual sugar while also having a scattered pH range. 
+
+**The total sulphate would be the next thing which we would be checking on the basis of pH.** 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(pH,total.sulfur.dioxide,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)
+``` 
+
+
+As established previously , Better wines have a range of total sulphate somewhere in between 50-250
+
+Similarly for free sulphate dioxide 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(pH,free.sulfur.dioxide,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)
+``` 
+
+
+Similar to our previous observation. There is a particular range of pH as well as total and free sulphate dioxide which makes the wine great! 
+
+** Sulphates and Ratio** Our groundbreaking discovery ? 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(ratio,sulphates,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)
+``` 
+
+Sadly , No. There is nothing concrete to infer from the above graph apart from the fact that lower quality wine have lower ration as compared to moderate as well higher quality wine having a moderate ratio rate. As far as Sulphate is concerned we can see that all types of wines have a standard limit for sulphates.
+**So is it just alcohol and SO2 levels ?** 
+
+Total Sulpher dioxide graph is plotted below, 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,total.sulfur.dioxide,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)
+``` 
+
+Interstingly , We can see that higher alcohol concentration along with lower SO2 levels gives a better wine. 
+
+Let's check for free sulphur dioxide , 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,free.sulfur.dioxide,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)
+``` 
+
+Not surprising at all. 
+Our final inference could be well restricted to the fact that , Quality is heavily dependent on Alcohol Concentration as well as Total and free sulphate dioxide. 
+
+## Final Summary 
+
+We reach the end of our report. We saw a lot of graph! So what's our key takeaway ? We can say that from our univariate analysis we found out a lot of outliers present in the data. We removed all outliers and moved on to bivariate analysis , Where we could find a lot of interesting relations such as ratio vs alcohol , residual sugar vs ratio and more importantly the affect of alcohol on the quality of wines. 
+
+The key takeway could be the fact that restricted Sulphate dioxide rates along with higher concetration of Alcohol yields in better wine quality as shown below , 
+
+** Plot - 1 ** 
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,total.sulfur.dioxide,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)
+``` 
+
+In this , graph you could see that lower total sulpher dioxide along with higher level of alcohol gives a better wine! which actually makes sense , Since alcohol would yield in lower ratio but what's further surprising is the fact that there is a correlation between total sulpher dioxide and density. The correlation isn't a strong one but can be said that there is an effect. Here is the correlation :- 
+
+```{r echo = FALSE}
+cor(df_rmout$total.sulfur.dioxide , df_rmout$density)
+``` 
+
+Which can be seen on the graph below , 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(total.sulfur.dioxide,density))+geom_point()
+```
+
+Similarly for the free sulphur dioxide , 
+
+```{r echo = FALSE}
+cor(df_rmout$free.sulfur.dioxide , df_rmout$density)
+``` 
+
+As seen below , Free sulphur dioxide has a lower correlation with density.
+
+** Plot - 2 ** 
+
+The density problem , We saw lower density had a great affect on the quality of wine. Let's check this graph to assess more. 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,density,col=factor(quality)))+
+  geom_point(alpha=0.5)+
+  facet_grid(.~quality)
+``` 
+
+We can see that there is a good relation , But is it strong enough to infer ? No , We can come to a conclusion again with respect to alcohol that lower concentration of alcohol means a lower quality wine. Whilst a lower density wine is better and we saw from the correlation graph previously that alcohol concentration has adverse affect on the density 
+
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,density))+geom_point()
+``` 
+
+** Plot - 3 ** 
+```{r echo = FALSE}
+ggplot(df_rmout,aes(alcohol,fill=class))+
+  geom_density(alpha=0.5)+
+  labs(x="Alcohol Concentration",fill="  Class of\nWhite Wine")+
+  ggtitle("Density of Alcohol Concentration by White Wine class")
+```
+
+
+Here , We were able to segreate the lower quality wine from the better quality wines. Which resulted in further analysis. 
+
+The statistics for the very same is mentioned below , 
+
+For average wines : 
+```{r echo =FALSE}
+summary(df_rmout[df_rmout$class=="average",]$alcohol)
+``` 
+
+for good wines : 
+
+```{r echo = FALSE}
+summary(df_rmout[df_rmout$class=="good",]$alcohol)
+```
+
+for great wines : 
+
+```{r echo = FALSE}
+summary(df_rmout[df_rmout$class=="great",]$alcohol)
+```
+
+
+
+These statistics were important to reach the conclusion. 
+
+## CONCLUSION 
+
+Finally our quest to search for the best possible combination to build a great wine ends. We have found out that alcohol has a huge impact on the overall quality of wine.
+
+Apart from alcohol we saw that sulphur dioxide free and total had infuence on the wine being great. The chemical aspects of wine affect the quality of wine. 
+
+We also found that there was a specific pH range and ratio of the sulphur dioxide affecting the entire quality of wine along with the alcohol concentration. 
+
+The future research can further be based on different parameters such as aging of wine , temperature which can affect the density in turn affect the quality of wine. Also , There was a strong feeling that if further more data could've been gathered it would've enriched our conclusion and could have given a much better conclusion. 
+
